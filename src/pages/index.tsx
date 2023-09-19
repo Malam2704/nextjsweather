@@ -6,14 +6,14 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const [location, setLocation] = useState('');
-  const [weather, setWeather] = useState('')
+  const [weatherData, setWeatherData] = useState('')
   const [searchHistory, setSearchHistory] = useState([]);
 
   // Load search history from local storage on component mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('searchHistory');
     if (savedHistory) {
-      setSearchHistory(JSON.parse(savedHistory));
+      setSearchHistory(JSON.parse(savedHistory).reverse()); // Reverse the order
     }
   }, []);
 
@@ -43,23 +43,11 @@ export default function Home() {
             img: data.current.condition.icon
           }
 
-          setSearchHistory([...searchHistory, api_data.city].slice(-6));
-          setWeather(<>
-            <div className='text-center text-2xl p-2'>{api_data.city}</div>
-            <div className='flex justify-center'>
-              <div className='flow-root'>
-                <div className='float-left'><img src={api_data.img} width='80' height='80' alt='Condition' /></div>
-                <div className='float-left text-6xl degrees'>{api_data.temp}</div>
-              </div>
-            </div>
-            <div className='text-center text-gray-600'>{api_data.condition}</div>
-            <div className='flow-root p-2'>
-              <div className='float-left text-gray-600'>Humiditiy: {api_data.humidity}%</div>
-              <div className='float-right text-gray-600'>Wind: {api_data.wind}mph</div>
-              <div className='float-left text-gray-600'>Visibility: {api_data.visibility}mi</div>
-              <div className='float-right text-gray-600'>Gust: {api_data.gust}mph</div>
-            </div>
-          </>)
+          // Update search history with the new search
+          setSearchHistory([api_data.city, ...searchHistory]);
+
+          // Update weather data with the new weather information
+          setWeatherData([api_data, ...weatherData]);
 
         }
       } catch (err) {
@@ -88,23 +76,36 @@ export default function Home() {
         </button>
       </nav>
 
-      <div className='flex w-full p-20 justify-center'>
-        <div className='w-full max-w-xs'>
-          <div className='mb-4'>
+      <h2 className='text-lg font-semibold m-4 text-center text-white text-2xl' style={{ fontSize: '24px' }}>
+        Last Searches:
+      </h2>
+      <div className='flex flex-wrap justify-center'>
+        {searchHistory.map((city, index) => (
+          <div className='w-full max-w-xs m-4' key={index}>
             <div className='bg-white shadow-lg rounded-3xl px-8 pt-6 pb-8 mb-4 opacity-80'>
-              <h2 className='text-lg font-semibold mb-4'>Last 6 Searches:</h2>
-              <ul>
-                {searchHistory.map((city, index) => (
-                  <li key={index}>{city}</li>
-                ))}
-              </ul>
-              {weather}
-
-
-
+              <div className='text-center text-2xl p-2'>{city}</div>
+              {weatherData[index] && (
+                <>
+                  <div className='flex justify-center'>
+                    <div className='flow-root'>
+                      <div className='float-left'>
+                        <img src={weatherData[index].img} width='80' height='80' alt='Condition' />
+                      </div>
+                      <div className='float-left text-6xl degrees'>{weatherData[index].temp}</div>
+                    </div>
+                  </div>
+                  <div className='text-center text-gray-600'>{weatherData[index].condition}</div>
+                  <div className='flow-root p-2'>
+                    <div className='float-left text-gray-600'>Humidity: {weatherData[index].humidity}%</div>
+                    <div className='float-right text-gray-600'>Wind: {weatherData[index].wind}mph</div>
+                    <div className='float-left text-gray-600'>Visibility: {weatherData[index].visibility}mi</div>
+                    <div className='float-right text-gray-600'>Gust: {weatherData[index].gust}mph</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </div>
+        ))}
       </div>
 
     </>
