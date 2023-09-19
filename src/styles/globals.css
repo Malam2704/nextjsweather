@@ -13,3 +13,11 @@ body {
 .degrees:after {
   content: "\00b0";
 }
+
+.weather-box-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  /* Make the containers fill the available height */
+}

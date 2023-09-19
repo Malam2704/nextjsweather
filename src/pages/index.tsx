@@ -33,6 +33,7 @@ export default function Home() {
         if (data) {
           const api_data = {
             country: data.location.country,
+            subdivision: data.location.region,
             city: data.location.name,
             temp: data.current.temp_f,
             humidity: data.current.humidity,
@@ -80,10 +81,12 @@ export default function Home() {
         Last Searches:
       </h2>
       <div className='flex flex-wrap justify-center'>
-        {searchHistory.map((city, index) => (
+        {searchHistory.map((data, index) => (
           <div className='w-full max-w-xs m-4' key={index}>
-            <div className='bg-white shadow-lg rounded-3xl px-8 pt-6 pb-8 mb-4 opacity-80'>
-              <div className='text-center text-2xl p-2'>{city}</div>
+            <div className='weather-box-container bg-white shadow-lg rounded-3xl px-8 pt-6 pb-8 mb-4 opacity-80'>
+              <div className='text-center text-1xl p-2'>
+                <div className='font-semibold'>{weatherData[index].city}</div>, {weatherData[index].subdivision}, {weatherData[index].country}
+              </div>
               {weatherData[index] && (
                 <>
                   <div className='flex justify-center'>
